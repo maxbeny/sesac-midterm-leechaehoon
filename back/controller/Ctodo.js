@@ -3,11 +3,10 @@ const { Todo } = require("../models/index");
 /* Todos 전체 목록 불러오기 */
 exports.readAll = async (req, res) => {
   try {
-    const id = req.id;
+    const id = req.body;
 
     const todos = await Todo.readAll({
       where: {
-        id,
         title,
         done,
       },
@@ -15,9 +14,7 @@ exports.readAll = async (req, res) => {
       raw: false,
     });
 
-    const plainTodos = todos.map((todo) => todo.get({ plain: true }));
-
-    success(res, plainTodos, "투두 전체 목록 불러오기");
+    success(res, todos, "투두 전체 목록 불러오기");
   } catch (err) {
     serverError(res, err);
   }
@@ -26,11 +23,10 @@ exports.readAll = async (req, res) => {
 /* Todo 한 개 불러오기 */
 exports.readOne = async (req, res) => {
   try {
-    const id = req.id;
+    const { title, done } = req.body;
 
-    const todos = await Todo.readOne({
+    const todo = await Todo.readOne({
       where: {
-        id,
         title,
         done,
       },
@@ -38,9 +34,7 @@ exports.readOne = async (req, res) => {
       raw: false,
     });
 
-    const plainTodos = todos.map((todo) => todo.get({ plain: true }));
-
-    success(res, plainTodos, "투두 한개 불러오기");
+    success(res, todo, "투두 한개 불러오기");
   } catch (err) {
     serverError(res, err);
   }
@@ -49,11 +43,9 @@ exports.readOne = async (req, res) => {
 /* 새로운 Todo 생성 */
 exports.create = async (req, res) => {
   try {
-    const { keyword_id, title, priority, date, content } = req.body;
-    const user_id = req.user.id;
+    const { title, done } = req.body;
 
     const todo = await Todo.create({
-      id,
       title,
       done,
     });
@@ -76,7 +68,7 @@ exports.create = async (req, res) => {
 /* 기존 Todo 수정 */
 exports.update = async (req, res) => {
   try {
-    const { id, title, done } = req.body;
+    const { title, done } = req.body;
 
     const [updated] = await Todo.update(
       {
