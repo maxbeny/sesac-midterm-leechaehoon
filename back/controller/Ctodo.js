@@ -1,16 +1,81 @@
 const { Todo } = require("../models/index");
 
 /* Todos 전체 목록 불러오기 */
-exports.readAll = async (req, res) => {};
+exports.readAll = async (req, res) => {
+  try {
+    const id = req.id;
+
+    const todos = await Todo.readAll({
+      where: {
+        id,
+        title,
+        done,
+      },
+      attributes: ["id", "title", "done"],
+      raw: false,
+    });
+
+    const plainTodos = todos.map((todo) => todo.get({ plain: true }));
+
+    success(res, plainTodos, "투두 전체 목록 불러오기");
+  } catch (err) {
+    serverError(res, err);
+  }
+};
 
 /* Todo 한 개 불러오기 */
 exports.readOne = async (req, res) => {};
 
 /* 새로운 Todo 생성 */
-exports.create = async (req, res) => {};
+exports.create = async (req, res) => {
+  try {
+    const { keyword_id, title, priority, date, content } = req.body;
+    const user_id = req.user.id;
+
+    const todo = await Todo.create({
+      id,
+      title,
+      done,
+    });
+
+    if (content && content.length > 0) {
+      const contentData = content.map((item) => ({
+        content: typeof item === "string" ? item : item.content,
+        state: typeof item === "string" ? false : !!item.state,
+      }));
+
+      await TodoContent.bulkCreate(contentData);
+    }
+
+    success(res, todo, "Todo 생성 완료");
+  } catch (err) {
+    serverError(res, err);
+  }
+};
 
 /* 기존 Todo 수정 */
 exports.update = async (req, res) => {};
 
 /* 기존 Todo 삭제 */
-exports.delete = async (req, res) => {};
+exports.delete = async (req, res) => {
+  try {
+    const { id } = req.body;
+    console.log("Received delete request for id:", id);
+
+    const [deleted] = await Todo.update(
+      { deleted: true, deleted_at: new Date() },
+      { where: { id } }
+    );
+
+    if (!deleted) {
+      console.log("Todo not found for id:", id);
+      return notFound(res, null, "Todo를 찾을 수 없습니다.");
+    }
+
+    console.log("Todo deleted successfully");
+    success(res, null, "Todo 삭제 완료");
+  } catch (err) {
+    console.error("Error deleting todo:", err);
+    serverError(res, err);
+  }
+};
