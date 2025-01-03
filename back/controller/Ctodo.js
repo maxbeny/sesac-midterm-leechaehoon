@@ -24,7 +24,27 @@ exports.readAll = async (req, res) => {
 };
 
 /* Todo 한 개 불러오기 */
-exports.readOne = async (req, res) => {};
+exports.readOne = async (req, res) => {
+  try {
+    const id = req.id;
+
+    const todos = await Todo.readOne({
+      where: {
+        id,
+        title,
+        done,
+      },
+      attributes: ["id", "title", "done"],
+      raw: false,
+    });
+
+    const plainTodos = todos.map((todo) => todo.get({ plain: true }));
+
+    success(res, plainTodos, "투두 한개 불러오기");
+  } catch (err) {
+    serverError(res, err);
+  }
+};
 
 /* 새로운 Todo 생성 */
 exports.create = async (req, res) => {
@@ -54,7 +74,49 @@ exports.create = async (req, res) => {
 };
 
 /* 기존 Todo 수정 */
-exports.update = async (req, res) => {};
+exports.update = async (req, res) => {
+  try {
+    const { id, title, done } = req.body;
+
+    const [updated] = await Todo.update(
+      {
+        id,
+        title,
+        done,
+      },
+      { where: { id } }
+    );
+
+    if (!updated) {
+      return notFound(res, null, "Todo를 찾을 수 없습니다.");
+    }
+
+    if (contents) {
+      const contentsArray = Array.isArray(contents) ? contents : [contents];
+
+      for (const content of contentsArray) {
+        const { id: contentId, content: text, state } = content;
+
+        if (contentId) {
+          await TodoContent.update(
+            { content: text, state: state === "true" },
+            { where: { id: contentId, todo_id: id } }
+          );
+        } else {
+          await TodoContent.create({
+            todo_id: id,
+            content: text,
+            state: state === "true",
+          });
+        }
+      }
+    }
+
+    success(res, null, "Todo 업데이트 완료");
+  } catch (err) {
+    serverError(res, err);
+  }
+};
 
 /* 기존 Todo 삭제 */
 exports.delete = async (req, res) => {
