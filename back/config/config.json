@@ -1,0 +1,9 @@
+{
+  "development": {
+    "username": "user_숫자",
+    "password": "codingon_숫자",
+    "database": "db_숫자",
+    "host": "sesac-evaluation.cn6ww0owo0vr.ap-northeast-2.rds.amazonaws.com",
+    "dialect": "mysql"
+  }
+}
