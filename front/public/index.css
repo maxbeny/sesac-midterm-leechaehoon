@@ -1,0 +1,12 @@
+/* 가상 클래스 선택자 root의 색상들은 필수 사용요소가 아닙니다.
+색상은 자유롭게 구성해주세요. */
+:root {
+  --main-color: #04c82f;
+  --main-bg-color: #e5ffeb;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
