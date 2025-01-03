@@ -10,3 +10,40 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+@media (max-width: 540px) {
+  body {
+    font-size: 14px;
+    padding: 10px;
+  }
+  .todo-list {
+    display: block;
+    width: 100;
+  }
+}
+
+@media (min-width: 541px) and(max-width:960px) {
+  body {
+    font-size: 16px;
+    padding: 20px;
+  }
+  .todo-list {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    margin: auto;
+  }
+}
+
+@media (min-width: 961px) {
+  body {
+    font-size: 18px;
+    padding: 30px;
+  }
+  .todo-list {
+    display: flex;
+    flex-direction: row;
+    width: 800;
+    margin: auto;
+  }
+}
